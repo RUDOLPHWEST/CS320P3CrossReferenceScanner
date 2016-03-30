@@ -3,7 +3,7 @@
 #include "exceptions_CS320.h"
 #include "OrderedPair.h"  
 using namespace std;
-
+//Erase, Find, End
 template <typename Comparable>
 class BinarySearchTree
 {
@@ -410,10 +410,10 @@ public:
 	unsigned size() const;
 	void printInOrder() const;
 	void makeEmpty();
-	OrderedPair<typename BinarySearchTree<Comparable>::iterator, bool>  find(const Comparable & x) const;
+	OrderedPair<typename BinarySearchTree<Comparable>::iterator, bool>  find(const Comparable & x) /*const*/;
 	OrderedPair<typename BinarySearchTree<Comparable>::iterator, bool>  insert(const Comparable & x);
 	void erase(const Comparable & x);
-	void erase(typename BinarySearchTree<Comparable>::const_iterator);
+	void erase(typename BinarySearchTree<Comparable>::iterator); //const iterator
 	void erase(iterator first, iterator last);
 	// erase all items in the range [first, last).
 	// Precondition: the tree must not be empty. 
@@ -425,10 +425,10 @@ public:
 	// inorder
 	iterator begin()
 	{
-		if (root == NULL)
+		if (root == nullptr)
 		{
-			iterator itr = NULL;
-			return itr;
+			//iterator itr(NULL, this) ;
+			return iterator(NULL, this);
 		}
 		//if the tree has a root
 		else
@@ -436,7 +436,7 @@ public:
 			BST_Node * currentNode;
 			currentNode = root;
 
-			while (currentNode->left != NULL)
+			while (currentNode->left != nullptr)
 			{
 				currentNode = currentNode->left;
 			}
@@ -468,6 +468,12 @@ public:
 			const_iterator itr(currentNode, this);
 			return itr;
 		}
+	}
+
+	iterator end()
+	{
+		// end indicated by an iterator with NULL stnode pointer
+		return iterator(NULL, this);
 	}
 
 	// constant version
@@ -569,7 +575,7 @@ void BinarySearchTree<Comparable>::printInOrder() const
 *                 if second is false, the first element is end() of tree indicating element not found
 */
 template<typename Comparable>
-typename OrderedPair<typename BinarySearchTree<Comparable>::iterator, bool>  BinarySearchTree<Comparable>::find(const Comparable & x) const
+typename OrderedPair<typename BinarySearchTree<Comparable>::iterator, bool>  BinarySearchTree<Comparable>::find(const Comparable & x) //const
 {
 
 	BST_Node *t = root, *curr;;
@@ -586,9 +592,9 @@ typename OrderedPair<typename BinarySearchTree<Comparable>::iterator, bool>  Bin
 	// if x is found, return a const_iterator with pointer t;
 	// otherwise, return that the end() of tree was reached
 	if (t != NULL)
-		return const_iterator(t, this);
+		return OrderedPair<iterator,bool>(iterator(t,this), true);
 	else
-		return const_iterator(NULL, this); //return end()
+		return OrderedPair<iterator,bool>(iterator(NULL, this), false);
 }
 
 /*
@@ -606,7 +612,7 @@ typename OrderedPair<typename BinarySearchTree<Comparable>::iterator, bool> Bina
 	{
 		BST_Node * rootNode = new BST_Node(x);
 		root = rootNode;
-
+		numberOfNodes++;
 		iterator itr(root, this);
 		OrderedPair<typename BinarySearchTree<Comparable>::iterator, bool> insertionPair(itr, true);
 		return insertionPair;
@@ -661,14 +667,14 @@ typename OrderedPair<typename BinarySearchTree<Comparable>::iterator, bool> Bina
 * Remove node pointed at by iterator itr
 */
 template<typename Comparable>
-void BinarySearchTree<Comparable>::erase(typename BinarySearchTree<Comparable>::const_iterator itr)
+void BinarySearchTree<Comparable>::erase(typename BinarySearchTree<Comparable>::iterator itr) // const
 {
 	// dNodePtr = pointer to node D that is deleted
 	// pNodePtr = pointer to parent P of node D
 	// rNodePtr = pointer to node R that replaces D
 	BST_Node *dNodePtr = itr.nodePtr, *pNodePtr, *rNodePtr;
 	if (root == NULL)
-		throw  underFlowError("BinarySearchTree::erase() : underflow");
+		throw  underflowError("BinarySearchTree::erase() : underflow");
 	if (dNodePtr == NULL)
 		throw  referenceError("BinarySearchTree::erase(): invalid iterator");
 
@@ -697,7 +703,7 @@ void BinarySearchTree<Comparable>::erase(typename BinarySearchTree<Comparable>::
 		// unlink the node from the tree.
 
 		// pOfRNodePtr = pointer to parent of replacement node
-		stnode<T> *pOfRNodePtr = dNodePtr;
+		BST_Node *pOfRNodePtr = dNodePtr;
 
 		// first possible replacement is right child of D
 		rNodePtr = dNodePtr->right;
@@ -727,7 +733,9 @@ void BinarySearchTree<Comparable>::erase(typename BinarySearchTree<Comparable>::
 			// of the right child of D. unlink R from tree by
 			// assigning its right subtree as the left child of
 			// the parent of R
+			//cout << pOfRNodePtr << endl;
 			pOfRNodePtr->left = rNodePtr->right;
+			
 
 			// the parent of the right child of R is the
 			// parent of R

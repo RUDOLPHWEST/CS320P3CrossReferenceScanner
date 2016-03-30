@@ -46,12 +46,12 @@ public:
 		// search for item in the map with the given key
 		// and return an iterator pointing at it, or end()
 		// if it is not found
-		return (t.find(OrderedPair<const Key, T>(key, default))).first;
+		return (t.find(OrderedPair<const Key, T>(key, T()))).first;
 	}
 
 	const_map_iterator find(const Key& key) const {
 		// constant version of find()
-		return (t.find(OrderedPair<const Key, T>(key, default))).first;
+		return (t.find(OrderedPair<const Key, T>(key, T()))).first;
 	}
 
 	T& operator[] (const Key& key) {
@@ -60,13 +60,14 @@ public:
 		// reference to the default value; otherwise,
 		// return a reference to the value already associated
 		// with the key 
-		OrderedPair<map_iterator, 
-			bool> result = t.find(OrderedPair<const Key, T>(key, default));
+
+		OrderedPair<map_iterator, bool> result = t.find(OrderedPair<const Key, T>(key, T()));
 		if (result.second)
 			return (*(result.first)).second;
+
 		else {
 			OrderedPair<map_iterator, bool> insertResult = t.insert
-				(OrderedPair<const Key, T> kvpair(key, default));
+				(OrderedPair<const Key, T>(key, T()));
 			return (*(insertResult.first)).second;
 		}
 	}
@@ -87,9 +88,11 @@ public:
 		// erase the key/value pair with the specified key
 		// from the map and return the number
 		// of items erased (1 or 0)
-		if (t.find(key) == true)
+		OrderedPair<map_iterator, bool> result = t.find(OrderedPair<const Key, T>(key, T()));
+
+		if(result.second)
 		{
-			t.erase(key);
+			t.erase(result.first);
 			return 1;
 		}
 		else

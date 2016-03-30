@@ -1,13 +1,12 @@
 #pragma once
 #include <iostream>
-#include "BinSearchTree.h"
 #include "RestrictedMap.h"
 
 using namespace std;
 
 int main()
 {
-	cout << "Testing Binary Search Tree" << endl;
+	std::cout << "Testing Binary Search Tree" << endl;
 	//create tree
 	BinarySearchTree<int> tree;
 	tree.insert(8);
@@ -21,6 +20,7 @@ int main()
 	tree.insert(7);
 	//print tree
 	tree.printInOrder();
+	cout << endl << endl << tree.size() << endl << endl;
 
 	cout << "Testing Restricted Map" << endl;
 	//create map
@@ -30,12 +30,12 @@ int main()
 	const OrderedPair<const int, int> kvpair2(14, 140);
 	const OrderedPair<const int, int> kvpair3(13, 130);
 
-	OrderedPair<RestrictedMap<int,int>::map_iterator, bool> result = map.insert(kvpair);
+	OrderedPair<RestrictedMap<int, int>::map_iterator, bool> result = map.insert(kvpair);
 	if (result.second)
 		cout << "Insertion of 8, 80 successful" << endl;
 	else
 		cout << "8, 80 already exists" << endl;
-	
+
 	//insert duplicate
 	map.insert(kvpair1);
 	OrderedPair<RestrictedMap<int, int>::map_iterator, bool> result1 = map.insert(kvpair1);
@@ -49,8 +49,16 @@ int main()
 	cout << " Inserted two more pairs into the map." << endl;
 	//test access operator
 	cout << "map[8] = " << map[8] << endl;
-
-
+	map[8] = 88;
+	cout << "map[8] = " << map[8] << endl;
+	RestrictedMap<int, int>::map_iterator itr = map.find(8);
+	cout << "Size of Map: " << map.size() << endl;
+	cout << "Erasing a value: ";
+		map.erase(8);
+	cout << "Size of Map: " << map.size() << endl;
+	map.find(8);
+	RestrictedMap<int, int>::map_iterator itr1 = map.begin();
+		
 
 }
 
